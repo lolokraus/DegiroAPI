@@ -12,7 +12,7 @@ class DeGiro:
     __TRANSACTIONS_URL = 'https://trader.degiro.nl/reporting/secure/v4/transactions'
     __ORDERS_URL = 'https://trader.degiro.nl/reporting/secure/v4/order-history'
 
-    __PLACE_CHECK_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/checkOrder'
+    __PLACE_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/checkOrder'
     __CONFIRM_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/order/'
 
     __GET_REQUEST = 0
@@ -90,14 +90,12 @@ class DeGiro:
             raise Exception('The maximum timespan is 90 days')
         return self.__request(DeGiro.__ORDERS_URL, orders_payload, error_message='Could not get orders.')['data']
 
-    def placeorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
-
-        place_check_order_params = {
+    def buyorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
+        place_buy_order_params = {
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id,
         }
-
-        place_check_order_payload = {
+        place_buy_order_payload = {
             'buySell': "BUY",
             'orderType': orderType,
             'productId': productId,
@@ -106,7 +104,6 @@ class DeGiro:
             'price': limit,
             'stopPrice': stop_loss,
         }
-
         if orderType != Order.Type.STOPLIMIT and orderType != Order.Type.MARKET \
                 and orderType != Order.Type.LIMIT and orderType != Order.Type.STOPLOSS:
             raise Exception('Invalid order type')
@@ -114,15 +111,47 @@ class DeGiro:
         if timeType != 1 and timeType != 3:
             raise Exception('Invalid time type')
 
-        place_check_order_response = self.__request(DeGiro.__PLACE_CHECK_ORDER_URL + ';jsessionid=' + self.session_id,
-                                                    place_check_order_payload, place_check_order_params,
+        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id,
+                                                    place_buy_order_payload, place_buy_order_params,
                                                     request_type=DeGiro.__POST_REQUEST,
                                                     error_message='Could not place order')
 
         self.confirmation_id = place_check_order_response['data']['confirmationId']
 
         self.__request(DeGiro.__CONFIRM_ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id,
-                       place_check_order_payload, place_check_order_params, request_type=DeGiro.__POST_REQUEST,
+                       place_buy_order_payload, place_buy_order_params, request_type=DeGiro.__POST_REQUEST,
+                       error_message='Could not confirm order')
+
+    def sellorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
+        place_sell_order_params = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id,
+        }
+        place_sell_order_payload = {
+            'buySell': "SELL",
+            'orderType': orderType,
+            'productId': productId,
+            'timeType': timeType,
+            'size': size,
+            'price': limit,
+            'stopPrice': stop_loss,
+        }
+        if orderType != Order.Type.STOPLIMIT and orderType != Order.Type.MARKET \
+                and orderType != Order.Type.LIMIT and orderType != Order.Type.STOPLOSS:
+            raise Exception('Invalid order type')
+
+        if timeType != 1 and timeType != 3:
+            raise Exception('Invalid time type')
+
+        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id,
+                                                    place_sell_order_payload, place_sell_order_params,
+                                                    request_type=DeGiro.__POST_REQUEST,
+                                                    error_message='Could not place order')
+
+        self.confirmation_id = place_check_order_response['data']['confirmationId']
+
+        self.__request(DeGiro.__CONFIRM_ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id,
+                       place_sell_order_payload, place_sell_order_params, request_type=DeGiro.__POST_REQUEST,
                        error_message='Could not confirm order')
 
     def get_stock_list(self, indexId, stockCountryId):
