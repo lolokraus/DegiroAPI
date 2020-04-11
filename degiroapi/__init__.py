@@ -1,6 +1,7 @@
 import requests
 from degiroapi.order import Order
 from degiroapi.client_info import ClientInfo
+from degiroapi.datatypes import Data
 
 
 class DeGiro:
@@ -14,6 +15,8 @@ class DeGiro:
 
     __PLACE_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/checkOrder'
     __CONFIRM_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/order/'
+
+    __DATA_URL = 'https://trader.degiro.nl/trading/secure/v5/update/'
 
     __GET_REQUEST = 0
     __POST_REQUEST = 1
@@ -37,6 +40,8 @@ class DeGiro:
                                               error_message='Could not get client info.')
         self.client_info = ClientInfo(client_info_response['data'])
 
+        return client_info_response
+
     @staticmethod
     def __request(url, payload, post_params=None, request_type=__GET_REQUEST, error_message='An error occurred.'):
         if request_type == DeGiro.__GET_REQUEST:
@@ -48,9 +53,10 @@ class DeGiro:
         else:
             raise Exception(f'Unknown request type: {request_type}')
 
-        if response.status_code != 200:
+        if response.status_code == 200 or response.status_code == 201:
+            return response.json()
+        else:
             raise Exception(f'{error_message} Response: {response.text}')
-        return response.json()
 
     def search_products(self, search_text, limit=1):
         product_search_payload = {
@@ -89,6 +95,43 @@ class DeGiro:
         if (to_date - from_date).days > 90:
             raise Exception('The maximum timespan is 90 days')
         return self.__request(DeGiro.__ORDERS_URL, orders_payload, error_message='Could not get orders.')['data']
+
+    @staticmethod
+    def filtercachfunds(cachfunds):
+        data = []
+        for item in cachfunds['cashFunds']['value']:
+            if item['value'][2]['value'] != 0:
+                data.append(item['value'][1]['value'] + " " + str(item['value'][2]['value']))
+        return data
+
+    @staticmethod
+    def filterportfolio(portfolio):
+        data = []
+        for item in portfolio['portfolio']['value']:
+            data.append(item['value'][0]['name'] + " " + str(item['value'][0]['value']) + " , " +
+                        item['value'][1]['name'] + " " + item['value'][1]['value'] + " , " +
+                        item['value'][2]['name'] + " " + str(item['value'][2]['value']) + " , " +
+                        item['value'][3]['name'] + " " + str(item['value'][3]['value']) + " , " +
+                        item['value'][4]['name'] + " " + str(item['value'][4]['value']) + " , " +
+                        item['value'][9]['name'] + " " + str(item['value'][9]['value']))
+        return data
+
+    def getdata(self, datatype):
+        data_payload = {
+            datatype: 0
+        }
+
+        if datatype == Data.Type.CACHFUNDS:
+            return self.filtercachfunds(
+                self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
+                               data_payload))
+        elif datatype == Data.Type.PORTFOLIO:
+            return self.filterportfolio(
+                self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
+                               data_payload))
+        else:
+            return self.__request(
+                DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id, data_payload)
 
     def buyorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
         place_buy_order_params = {
@@ -166,4 +209,5 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
-        return self.__request(DeGiro.__GET_STOCKS_URL, stock_list_params, error_message='Could not get stock list')['products']
+        return self.__request(DeGiro.__GET_STOCKS_URL, stock_list_params, error_message='Could not get stock list')[
+            'products']
