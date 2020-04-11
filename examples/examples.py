@@ -1,27 +1,36 @@
-from degiroapi.datatypes import Data
-from datetime import datetime, timedelta
-from degiroapi import DeGiro
+import degiroapi
 from degiroapi.product import Product
-from degiroapi.utils import pretty_json
 from degiroapi.order import Order
+from degiroapi.utils import pretty_json
+
+from datetime import datetime, timedelta
 
 # login
-degiro = DeGiro()
+degiro = degiroapi.DeGiro()
 degiro.login("username", "password")
 
 # print the current cash funds
-cachfunds = degiro.getdata(Data.Type.CACHFUNDS)
+cachfunds = degiro.getdata(degiroapi.Data.Type.CACHFUNDS)
 for data in cachfunds:
     print(data)
 
 # print the current portfolio
-portfolio = degiro.getdata(Data.Type.PORTFOLIO)
+portfolio = degiro.getdata(degiroapi.Data.Type.PORTFOLIO)
 for data in portfolio:
     print(data)
 
 # output one search result
 products = degiro.search_products('Pfizer')
 print(Product(products[0]).id)
+print(Product(products[0]).name)
+print(Product(products[0]).symbol)
+print(Product(products[0]).isin)
+print(Product(products[0]).currency)
+print(Product(products[0]).product_type)
+print(Product(products[0]).tradable)
+print(Product(products[0]).close_price)
+print(Product(products[0]).close_price_date)
+
 
 # output multiple search result
 products = degiro.search_products('Pfizer', 3)
@@ -61,7 +70,7 @@ degiro.buyorder(Order.Type.STOPLIMIT, Product(products[0]).id, 3, 1, 38, 38)
 # order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size
 degiro.buyorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
 
-# the stop loss price has to be higher than the current price, when current price reaches the stoploss price the order is places
+# the stop loss price has to be higher than the current price, when current price reaches the stoploss price the order is placed
 # order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, don't change none, stop_loss(stop loss price)
 degiro.buyorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
 
