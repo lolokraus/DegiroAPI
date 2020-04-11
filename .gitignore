@@ -1,3 +1,6 @@
 DegiroAPI.iml
 .idea/
 degiroapi/__pycache__/
+build/
+degiroapi.egg-info/
+dist/
