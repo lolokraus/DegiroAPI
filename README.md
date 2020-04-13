@@ -23,7 +23,15 @@ from degiroapi.utils import pretty_json
 degiro = degiroapi.DeGiro()
 degiro.login("username", "password")
 ```
+### Logging out
+
+```
+degiro.logout()
+```
+
 ## Available Functions
+* login
+* logout
 * getdata
 * search_products
 * transactions

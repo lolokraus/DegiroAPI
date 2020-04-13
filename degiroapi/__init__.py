@@ -2,10 +2,10 @@ import requests
 from degiroapi.order import Order
 from degiroapi.client_info import ClientInfo
 from degiroapi.datatypes import Data
-
-
 class DeGiro:
     __LOGIN_URL = 'https://trader.degiro.nl/login/secure/login'
+    __LOGOUT_URL = 'https://trader.degiro.nl/trading/secure/logout'
+
     __CLIENT_INFO_URL = 'https://trader.degiro.nl/pa/secure/client'
 
     __GET_STOCKS_URL = 'https://trader.degiro.nl/products_s/secure/v5/stocks'
@@ -42,6 +42,13 @@ class DeGiro:
 
         return client_info_response
 
+    def logout(self):
+        logout_payload = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id,
+        }
+        self.__request(DeGiro.__LOGOUT_URL + ';jsessionid=' + self.session_id, logout_payload, error_message='Could not log out')
+
     @staticmethod
     def __request(url, payload, post_params=None, request_type=__GET_REQUEST, error_message='An error occurred.'):
         if request_type == DeGiro.__GET_REQUEST:
@@ -54,7 +61,10 @@ class DeGiro:
             raise Exception(f'Unknown request type: {request_type}')
 
         if response.status_code == 200 or response.status_code == 201:
-            return response.json()
+            try:
+                return response.json()
+            except:
+                return "No data"
         else:
             raise Exception(f'{error_message} Response: {response.text}')
 
@@ -124,14 +134,14 @@ class DeGiro:
         if datatype == Data.Type.CACHFUNDS:
             return self.filtercachfunds(
                 self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
-                               data_payload))
+                               data_payload, error_message='Could not get data'))
         elif datatype == Data.Type.PORTFOLIO:
             return self.filterportfolio(
                 self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
-                               data_payload))
+                               data_payload, error_message='Could not get data'))
         else:
             return self.__request(
-                DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id, data_payload)
+                DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id, data_payload, error_message='Could not get data')
 
     def buyorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
         place_buy_order_params = {

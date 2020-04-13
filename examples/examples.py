@@ -9,6 +9,9 @@ from datetime import datetime, timedelta
 degiro = degiroapi.DeGiro()
 degiro.login("username", "password")
 
+# logout
+degiro.logout()
+
 # print the current cash funds
 cachfunds = degiro.getdata(degiroapi.Data.Type.CACHFUNDS)
 for data in cachfunds:
@@ -86,12 +89,3 @@ degiro.sellorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
 
 # order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, don't change none, stop_loss(stop loss price)
 degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
-
-
-
-
-
-
-
-
-
