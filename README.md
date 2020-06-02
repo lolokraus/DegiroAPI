@@ -42,8 +42,8 @@ degiro.logout()
 ## getdata
 Printing your current cach funds:
 ```
-cachfunds = degiro.getdata(degiroapi.Data.Type.CACHFUNDS)
-for data in cachfunds:
+cashfunds = degiro.getdata(degiroapi.Data.Type.CASHFUNDS)
+for data in cashfunds:
     print(data)
 ```
 Printing your current portfolio:

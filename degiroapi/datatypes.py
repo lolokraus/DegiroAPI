@@ -1,4 +1,4 @@
 class Data:
     class Type:
         PORTFOLIO = 'portfolio'
-        CACHFUNDS = 'cashFunds'
+        CASHFUNDS = 'cashFunds'

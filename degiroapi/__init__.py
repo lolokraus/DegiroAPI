@@ -107,9 +107,9 @@ class DeGiro:
         return self.__request(DeGiro.__ORDERS_URL, orders_payload, error_message='Could not get orders.')['data']
 
     @staticmethod
-    def filtercachfunds(cachfunds):
+    def filtercashfunds(cashfunds):
         data = []
-        for item in cachfunds['cashFunds']['value']:
+        for item in cashfunds['cashFunds']['value']:
             if item['value'][2]['value'] != 0:
                 data.append(item['value'][1]['value'] + " " + str(item['value'][2]['value']))
         return data
@@ -131,8 +131,8 @@ class DeGiro:
             datatype: 0
         }
 
-        if datatype == Data.Type.CACHFUNDS:
-            return self.filtercachfunds(
+        if datatype == Data.Type.CASHFUNDS:
+            return self.filtercashfunds(
                 self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
                                data_payload, error_message='Could not get data'))
         elif datatype == Data.Type.PORTFOLIO:
