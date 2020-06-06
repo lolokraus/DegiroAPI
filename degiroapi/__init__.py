@@ -118,12 +118,21 @@ class DeGiro:
     def filterportfolio(portfolio):
         data = []
         for item in portfolio['portfolio']['value']:
-            data.append(item['value'][0]['name'] + " " + str(item['value'][0]['value']) + " , " +
-                        item['value'][1]['name'] + " " + item['value'][1]['value'] + " , " +
-                        item['value'][2]['name'] + " " + str(item['value'][2]['value']) + " , " +
-                        item['value'][3]['name'] + " " + str(item['value'][3]['value']) + " , " +
-                        item['value'][4]['name'] + " " + str(item['value'][4]['value']) + " , " +
-                        item['value'][9]['name'] + " " + str(item['value'][9]['value']))
+            positionType = size = price = value = breakEvenPrice = None
+            for i in item['value']:
+                positionType = i['value'] if i['name'] == 'positionType' else positionType
+                size = i['value'] if i['name'] == 'size' else size
+                price = i['value'] if i['name'] == 'price' else price
+                value = i['value'] if i['name'] == 'value' else value
+                breakEvenPrice = i['value'] if i['name'] == 'breakEvenPrice' else breakEvenPrice
+            data.append({
+                "id": item['id'],
+                "positionType": positionType,
+                "size": size,
+                "price": price,
+                "value": value,
+                "breakEvenPrice": breakEvenPrice
+                })
         return data
 
     def getdata(self, datatype):
