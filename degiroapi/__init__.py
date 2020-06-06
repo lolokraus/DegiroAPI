@@ -1,7 +1,8 @@
-import requests
+import requests, json
 from degiroapi.order import Order
 from degiroapi.client_info import ClientInfo
 from degiroapi.datatypes import Data
+
 class DeGiro:
     __LOGIN_URL = 'https://trader.degiro.nl/login/secure/login'
     __LOGOUT_URL = 'https://trader.degiro.nl/trading/secure/logout'
@@ -10,6 +11,7 @@ class DeGiro:
 
     __GET_STOCKS_URL = 'https://trader.degiro.nl/products_s/secure/v5/stocks'
     __PRODUCT_SEARCH_URL = 'https://trader.degiro.nl/product_search/secure/v5/products/lookup'
+    __PRODUCT_INFO_URL = 'https://trader.degiro.nl/product_search/secure/v5/products/info'
     __TRANSACTIONS_URL = 'https://trader.degiro.nl/reporting/secure/v4/transactions'
     __ORDERS_URL = 'https://trader.degiro.nl/reporting/secure/v4/order-history'
 
@@ -50,9 +52,11 @@ class DeGiro:
         self.__request(DeGiro.__LOGOUT_URL + ';jsessionid=' + self.session_id, logout_payload, error_message='Could not log out')
 
     @staticmethod
-    def __request(url, payload, post_params=None, request_type=__GET_REQUEST, error_message='An error occurred.'):
+    def __request(url, payload, headers=None, data=None, post_params=None, request_type=__GET_REQUEST, error_message='An error occurred.'):
         if request_type == DeGiro.__GET_REQUEST:
             response = requests.get(url, params=payload)
+        elif request_type == DeGiro.__POST_REQUEST and headers and data:
+            response = requests.post(url, headers=headers, params=payload, data=data)
         elif request_type == DeGiro.__POST_REQUEST and post_params:
             response = requests.post(url, params=post_params, json=payload)
         elif request_type == DeGiro.__POST_REQUEST:
@@ -80,6 +84,19 @@ class DeGiro:
             self.__request(DeGiro.__PRODUCT_SEARCH_URL, product_search_payload,
                            error_message='Could not get products.')[
                 'products']
+
+    def product_info(self, product_id):
+        product_info_payload = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id
+        }
+        return \
+            self.__request(DeGiro.__PRODUCT_INFO_URL, 
+                product_info_payload, 
+                headers={'content-type': 'application/json'}, 
+                data=json.dumps([str(product_id)]),
+                request_type=DeGiro.__POST_REQUEST,
+                error_message='Could not get product info.')['data'][str(product_id)]
 
     def transactions(self, from_date, to_date, group_transactions=False):
         transactions_payload = {
