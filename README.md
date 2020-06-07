@@ -34,6 +34,7 @@ degiro.logout()
 * logout
 * getdata
 * search_products
+* product_info
 * transactions
 * orders
 * get_stock_list
@@ -57,6 +58,12 @@ Searching for a product:
 ```
 products = degiro.search_products('Pfizer')
 print(Product(products[0]).id)
+```
+## product_info
+Printing info for a specified product ID:
+```
+info = degiro.product_info(331823)
+print(info["id"], info["name"], info["currency"], info["closePrice"])
 ```
 ## transactions
 Printing your transactions in a given time interval:
