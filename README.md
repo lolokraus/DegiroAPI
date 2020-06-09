@@ -75,8 +75,8 @@ transactions = degiro.transactions(datetime(2019, 1, 1), datetime.now())
 print(pretty_json(transactions))
 ```
 ## orders
-Printing your order history(the maximum timespan is 90 days)
-With argument True, this function only return open orders
+Printing your order history(the maximum timespan is 90 days). 
+With argument True, this function only returns open orders
 ```
 from datetime import datetime, timedelta
 
