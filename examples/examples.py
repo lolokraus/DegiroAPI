@@ -17,8 +17,8 @@ cashfunds = degiro.getdata(degiroapi.Data.Type.CASHFUNDS)
 for data in cashfunds:
     print(data)
 
-# print the current portfolio
-portfolio = degiro.getdata(degiroapi.Data.Type.PORTFOLIO)
+# print the current portfolio (True to filter Products with size 0, False to show all)
+portfolio = degiro.getdata(degiroapi.Data.Type.PORTFOLIO, True)
 for data in portfolio:
     print(data)
 
@@ -41,6 +41,11 @@ print(Product(products[0]).id)
 print(Product(products[1]).id)
 print(Product(products[2]).id)
 
+# P
+# printing info for a specified product ID:
+info = degiro.product_info(5322419)
+print(info["id"], info["name"], info["currency"], info["closePrice"])
+
 # print transactions
 transactions = degiro.transactions(datetime(2019, 1, 1), datetime.now())
 print(pretty_json(transactions))
@@ -48,6 +53,16 @@ print(pretty_json(transactions))
 # print order history (maximum timespan 90 days)
 orders = degiro.orders(datetime.now() - timedelta(days=90), datetime.now())
 print(pretty_json(orders))
+
+# printing order history (maximum timespan 90 days), with argument True return only open orders
+orders = degiro.orders(datetime.now() - timedelta(days=90), datetime.now(), True)
+print(pretty_json(orders))
+
+# deleting an open order
+orders = degiro.orders(datetime.now() - timedelta(days=1), datetime.now(), True)
+degiro.delete_order(orders[0]['orderId'])
+
+degiro.delete_order("f278d56f-eaa0-4dc7-b067-45c6b4b3d74f")
 
 # get s&p 500 stock list
 sp5symbols = []

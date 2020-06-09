@@ -37,6 +37,7 @@ degiro.logout()
 * product_info
 * transactions
 * orders
+* delete_order
 * get_stock_list
 * buyorder
 * sellorder
@@ -47,9 +48,9 @@ cashfunds = degiro.getdata(degiroapi.Data.Type.CASHFUNDS)
 for data in cashfunds:
     print(data)
 ```
-Printing your current portfolio:
+Printing your current portfolio, argument True to filter out products with a size of 0, False or no Argument to show all:
 ```
-portfolio = degiro.getdata(degiroapi.Data.Type.PORTFOLIO)
+portfolio = degiro.getdata(degiroapi.Data.Type.PORTFOLIO, True)
 for data in portfolio:
     print(data)
 ```
@@ -75,12 +76,27 @@ print(pretty_json(transactions))
 ```
 ## orders
 Printing your order history(the maximum timespan is 90 days)
+With argument True, this function only return open orders
 ```
 from datetime import datetime, timedelta
 
 orders = degiro.orders(datetime.now() - timedelta(days=90), datetime.now())
 print(pretty_json(orders))
+
+orders = degiro.orders(datetime.now() - timedelta(days=90), datetime.now(), True)
+print(pretty_json(orders))
 ```
+
+## delete_order
+Deleting an open order with the orderId
+```
+orders = degiro.orders(datetime.now() - timedelta(days=1), datetime.now(), True)
+degiro.delete_order(orders[0]['orderId'])
+```
+```
+degiro.delete_order("f278d56f-eaa0-4dc7-b067-45c6b4b3d74f")
+```
+
 ## get_stock_list
 Get the symbols of the S&P500 stocks:
 ```
