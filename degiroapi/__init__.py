@@ -101,6 +101,15 @@ class DeGiro:
                               request_type=DeGiro.__POST_REQUEST,
                               error_message='Could not get product info.')['data'][str(product_id)]
 
+    def real_time_price(self, product_id):
+        vw_id=self.product_info(product_id)['vwdIdSecondary'] if 'vwdIdSecondary' in self.product_info(product_id).keys() else self.product_info(product_id)['vwdId']
+        return \
+            self.__request(url=f'https://charting.vwdservices.com/hchart/v1/deGiro/data.js?period=P1D&series=issueid%3A{vw_id}&series=price%3Aissueid%3A{vw_id}&format=json&userToken=771387',
+                payload=None,
+                headers={'content-type': 'application/json'}, 
+                request_type=DeGiro.__GET_REQUEST,
+                error_message='Could not get real time info.')['series'][0]['data']
+
     def transactions(self, from_date, to_date, group_transactions=False):
         transactions_payload = {
             'fromDate': from_date.strftime('%d/%m/%Y'),
