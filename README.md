@@ -35,6 +35,7 @@ degiro.logout()
 * getdata
 * search_products
 * product_info
+* real_time_info
 * transactions
 * orders
 * delete_order
@@ -65,6 +66,12 @@ Printing info for a specified product ID:
 ```
 info = degiro.product_info(331823)
 print(info["id"], info["name"], info["currency"], info["closePrice"])
+```
+## real_time_price
+Printing real time info for a specified product ID:
+```
+price=degiro.real_time_price(331823)
+print(price['lastPrice'], price['lastTime'], price['quality'])
 ```
 ## transactions
 Printing your transactions in a given time interval:
