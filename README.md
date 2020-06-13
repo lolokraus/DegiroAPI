@@ -35,7 +35,7 @@ degiro.logout()
 * getdata
 * search_products
 * product_info
-* real_time_info
+* real_time_price
 * transactions
 * orders
 * delete_order
