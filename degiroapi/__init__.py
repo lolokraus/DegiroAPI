@@ -2,10 +2,13 @@ import requests, json
 from degiroapi.order import Order
 from degiroapi.client_info import ClientInfo
 from degiroapi.datatypes import Data
+from degiroapi.intervaltypes import Interval
 
 
 class DeGiro:
     __LOGIN_URL = 'https://trader.degiro.nl/login/secure/login'
+    __CONFIG_URL = 'https://trader.degiro.nl/login/secure/config'
+
     __LOGOUT_URL = 'https://trader.degiro.nl/trading/secure/logout'
 
     __CLIENT_INFO_URL = 'https://trader.degiro.nl/pa/secure/client'
@@ -20,11 +23,13 @@ class DeGiro:
     __ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/order/'
 
     __DATA_URL = 'https://trader.degiro.nl/trading/secure/v5/update/'
+    __PRICE_DATA_URL = 'https://charting.vwdservices.com/hchart/v1/deGiro/data.js'
 
     __GET_REQUEST = 0
     __POST_REQUEST = 1
     __DELETE_REQUEST = 2
 
+    client_token = any
     session_id = any
     client_info = any
     confirmation_id = any
@@ -36,13 +41,21 @@ class DeGiro:
             'isPassCodeReset': False,
             'isRedirectToMobile': False
         }
-        login_response = self.__request(DeGiro.__LOGIN_URL, login_payload, request_type=DeGiro.__POST_REQUEST,
+        login_response = self.__request(DeGiro.__LOGIN_URL, None, login_payload, request_type=DeGiro.__POST_REQUEST,
                                         error_message='Could not login.')
         self.session_id = login_response['sessionId']
         client_info_payload = {'sessionId': self.session_id}
-        client_info_response = self.__request(DeGiro.__CLIENT_INFO_URL, client_info_payload,
+        client_info_response = self.__request(DeGiro.__CLIENT_INFO_URL, None, client_info_payload,
                                               error_message='Could not get client info.')
         self.client_info = ClientInfo(client_info_response['data'])
+
+        cookie = {
+            'JSESSIONID': self.session_id
+        }
+
+        client_token_response = self.__request(DeGiro.__CONFIG_URL, cookie=cookie, request_type=DeGiro.__GET_REQUEST,
+                                               error_message='Could not get client config.')
+        self.client_token = client_token_response['data']['clientId']
 
         return client_info_response
 
@@ -51,15 +64,17 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id,
         }
-        self.__request(DeGiro.__LOGOUT_URL + ';jsessionid=' + self.session_id, logout_payload,
+        self.__request(DeGiro.__LOGOUT_URL + ';jsessionid=' + self.session_id, None, logout_payload,
                        error_message='Could not log out')
 
     @staticmethod
-    def __request(url, payload, headers=None, data=None, post_params=None, request_type=__GET_REQUEST,
+    def __request(url, cookie=None, payload=None, headers=None, data=None, post_params=None, request_type=__GET_REQUEST,
                   error_message='An error occurred.'):
 
         if request_type == DeGiro.__DELETE_REQUEST:
             response = requests.delete(url, json=payload)
+        elif request_type == DeGiro.__GET_REQUEST and cookie:
+            response = requests.get(url, cookies=cookie)
         elif request_type == DeGiro.__GET_REQUEST:
             response = requests.get(url, params=payload)
         elif request_type == DeGiro.__POST_REQUEST and headers and data:
@@ -87,7 +102,7 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
-        return self.__request(DeGiro.__PRODUCT_SEARCH_URL, product_search_payload,
+        return self.__request(DeGiro.__PRODUCT_SEARCH_URL, None, product_search_payload,
                               error_message='Could not get products.')['products']
 
     def product_info(self, product_id):
@@ -95,7 +110,7 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
-        return self.__request(DeGiro.__PRODUCT_INFO_URL, product_info_payload,
+        return self.__request(DeGiro.__PRODUCT_INFO_URL, None, product_info_payload,
                               headers={'content-type': 'application/json'},
                               data=json.dumps([str(product_id)]),
                               request_type=DeGiro.__POST_REQUEST,
@@ -109,7 +124,7 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
-        return self.__request(DeGiro.__TRANSACTIONS_URL, transactions_payload,
+        return self.__request(DeGiro.__TRANSACTIONS_URL, None, transactions_payload,
                               error_message='Could not get transactions.')['data']
 
     def orders(self, from_date, to_date, not_executed=None):
@@ -122,7 +137,7 @@ class DeGiro:
         # max 90 days
         if (to_date - from_date).days > 90:
             raise Exception('The maximum timespan is 90 days')
-        data = self.__request(DeGiro.__ORDERS_URL, orders_payload, error_message='Could not get orders.')['data']
+        data = self.__request(DeGiro.__ORDERS_URL, None, orders_payload, error_message='Could not get orders.')['data']
         data_not_executed = []
         if not_executed:
             for d in data:
@@ -138,7 +153,8 @@ class DeGiro:
             'sessionId': self.session_id,
         }
 
-        return self.__request(DeGiro.__ORDER_URL + orderId + ';jsessionid=' + self.session_id, delete_order_params,
+        return self.__request(DeGiro.__ORDER_URL + orderId + ';jsessionid=' + self.session_id, None,
+                              delete_order_params,
                               request_type=DeGiro.__DELETE_REQUEST,
                               error_message='Could not delete order' + " " + orderId)
 
@@ -186,17 +202,38 @@ class DeGiro:
         if datatype == Data.Type.CASHFUNDS:
             return self.filtercashfunds(
                 self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
+                               None,
                                data_payload,
                                error_message='Could not get data'))
         elif datatype == Data.Type.PORTFOLIO:
             return self.filterportfolio(
                 self.__request(DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id,
+                               None,
                                data_payload,
                                error_message='Could not get data'), filter_zero)
         else:
             return self.__request(
-                DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id, data_payload,
+                DeGiro.__DATA_URL + str(self.client_info.account_id) + ';jsessionid=' + self.session_id, None,
+                data_payload,
                 error_message='Could not get data')
+
+    def real_time_price(self, product_id, interval):
+        vw_id = self.product_info(product_id)['vwdId']
+        tmp = vw_id
+        try:
+            int(tmp)
+        except:
+            vw_id = self.product_info(product_id)['vwdIdSecondary']
+
+        price_payload = {
+            'requestid': 1,
+            'period': interval,
+            'series': ['issueid:' + vw_id, 'price:issueid:' + vw_id],
+            'userToken': self.client_token
+        }
+
+        return self.__request(DeGiro.__PRICE_DATA_URL, None, price_payload,
+                             error_message='Could not get real time price')['series']
 
     def buyorder(self, orderType, productId, timeType, size, limit=None, stop_loss=None):
         place_buy_order_params = {
@@ -219,14 +256,14 @@ class DeGiro:
         if timeType != 1 and timeType != 3:
             raise Exception('Invalid time type')
 
-        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id,
+        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id, None,
                                                     place_buy_order_payload, place_buy_order_params,
                                                     request_type=DeGiro.__POST_REQUEST,
                                                     error_message='Could not place order')
 
         self.confirmation_id = place_check_order_response['data']['confirmationId']
 
-        self.__request(DeGiro.__ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id,
+        self.__request(DeGiro.__ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id, None,
                        place_buy_order_payload, place_buy_order_params,
                        request_type=DeGiro.__POST_REQUEST,
                        error_message='Could not confirm order')
@@ -252,14 +289,14 @@ class DeGiro:
         if timeType != 1 and timeType != 3:
             raise Exception('Invalid time type')
 
-        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id,
+        place_check_order_response = self.__request(DeGiro.__PLACE_ORDER_URL + ';jsessionid=' + self.session_id, None,
                                                     place_sell_order_payload, place_sell_order_params,
                                                     request_type=DeGiro.__POST_REQUEST,
                                                     error_message='Could not place order')
 
         self.confirmation_id = place_check_order_response['data']['confirmationId']
 
-        self.__request(DeGiro.__ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id,
+        self.__request(DeGiro.__ORDER_URL + self.confirmation_id + ';jsessionid=' + self.session_id, None,
                        place_sell_order_payload, place_sell_order_params,
                        request_type=DeGiro.__POST_REQUEST,
                        error_message='Could not confirm order')
@@ -276,5 +313,6 @@ class DeGiro:
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
-        return self.__request(DeGiro.__GET_STOCKS_URL, stock_list_params, error_message='Could not get stock list')[
-            'products']
+        return \
+            self.__request(DeGiro.__GET_STOCKS_URL, None, stock_list_params, error_message='Could not get stock list')[
+                'products']

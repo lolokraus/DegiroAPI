@@ -34,14 +34,12 @@ print(Product(products[0]).tradable)
 print(Product(products[0]).close_price)
 print(Product(products[0]).close_price_date)
 
-
 # output multiple search result
 products = degiro.search_products('Pfizer', 3)
 print(Product(products[0]).id)
 print(Product(products[1]).id)
 print(Product(products[2]).id)
 
-# P
 # printing info for a specified product ID:
 info = degiro.product_info(5322419)
 print(info["id"], info["name"], info["currency"], info["closePrice"])
@@ -63,6 +61,19 @@ orders = degiro.orders(datetime.now() - timedelta(days=1), datetime.now(), True)
 degiro.delete_order(orders[0]['orderId'])
 
 degiro.delete_order("f278d56f-eaa0-4dc7-b067-45c6b4b3d74f")
+
+# getting realtime and historical data from a stock
+products = degiro.search_products('nrz')
+
+# Interval can be set to One_Day, One_Week, One_Month, Three_Months, Six_Months, One_Year, Three_Years, Five_Years, Max
+realprice = degiro.real_time_price(Product(products[0]).id, degiroapi.Interval.Type.One_Day)
+
+# reatime data
+print(realprice[0]['data']['lastPrice'])
+print(pretty_json(realprice[0]['data']))
+
+# historical data
+print(realprice[1]['data'])
 
 # get s&p 500 stock list
 sp5symbols = []

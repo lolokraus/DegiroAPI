@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="degiroapi",
-    version="0.9",
+    version="0.9.5",
     author="Lorenz Kraus",
     author_email="lorenz.kraus@gmail.com",
     description="An unofficial API for the trading platform Degiro written in Python",

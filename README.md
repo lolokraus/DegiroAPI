@@ -38,6 +38,7 @@ degiro.logout()
 * transactions
 * orders
 * delete_order
+* real_time_price
 * get_stock_list
 * buyorder
 * sellorder
@@ -75,7 +76,7 @@ transactions = degiro.transactions(datetime(2019, 1, 1), datetime.now())
 print(pretty_json(transactions))
 ```
 ## orders
-Printing your order history(the maximum timespan is 90 days). 
+Printing your order history(the maximum timespan is 90 days)
 With argument True, this function only returns open orders
 ```
 from datetime import datetime, timedelta
@@ -95,6 +96,21 @@ degiro.delete_order(orders[0]['orderId'])
 ```
 ```
 degiro.delete_order("f278d56f-eaa0-4dc7-b067-45c6b4b3d74f")
+```
+
+## real_time_price
+Get the real time price and the historical data of a stock:
+```
+products = degiro.search_products('nrz')
+# Interval can be set to One_Day, One_Week, One_Month, Three_Months, Six_Months, One_Year, Three_Years, Five_Years, Max
+realprice = degiro.real_time_price(Product(products[0]).id, degiroapi.Interval.Type.One_Day)
+
+# getting the real time price
+print(realprice[0]['data']['lastPrice'])
+print(pretty_json(realprice[0]['data']))
+
+# getting historical data
+print(realprice[1]['data'])
 ```
 
 ## get_stock_list
