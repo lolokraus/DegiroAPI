@@ -1,5 +1,5 @@
 # DegiroAPI
-An unofficial API for the trading platform Degiro written in Python
+An unofficial API for the trading platform Degiro written in Python with the ability to get real time data and historical data for products. 
 
 ## Getting Started
 
