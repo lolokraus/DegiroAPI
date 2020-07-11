@@ -43,7 +43,7 @@ degiro.logout()
 * buyorder
 * sellorder
 ## getdata
-Printing your current cach funds:
+Printing your current cash funds:
 ```
 cashfunds = degiro.getdata(degiroapi.Data.Type.CASHFUNDS)
 for data in cashfunds:
