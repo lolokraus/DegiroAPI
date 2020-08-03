@@ -28,6 +28,7 @@ class DeGiro:
     __GET_REQUEST = 0
     __POST_REQUEST = 1
     __DELETE_REQUEST = 2
+    __MODIFY_REQUEST = 3
 
     client_token = any
     session_id = any
@@ -83,6 +84,8 @@ class DeGiro:
             response = requests.post(url, params=post_params, json=payload)
         elif request_type == DeGiro.__POST_REQUEST:
             response = requests.post(url, json=payload)
+        elif request_type == DeGiro.__MODIFY_REQUEST:
+            response = requests.put(url, params=post_params, json=payload)
         else:
             raise Exception(f'Unknown request type: {request_type}')
 
@@ -157,6 +160,34 @@ class DeGiro:
                               delete_order_params,
                               request_type=DeGiro.__DELETE_REQUEST,
                               error_message='Could not delete order' + " " + orderId)
+
+    def modify_order(self, orderType, orderId, productId, buySell, timeType, size, limit=None):
+        modify_order_params = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id,
+        }
+        if orderType == Order.Type.LIMIT:
+            order_payload = {
+                'buySell': buySell,
+                'orderType': Order.Type.LIMIT,
+                'productId': productId,
+                'timeType': timeType,
+                'size': size,
+                'price': limit
+            }
+        elif orderType == Order.Type.STOPLOSS:
+            order_payload = {
+                'buySell': buySell,
+                'orderType': Order.Type.STOPLOSS,
+                'productId': productId,
+                'timeType': timeType,
+                'size': size,
+                'stopPrice': limit
+            }
+
+        return self.__request(DeGiro.__ORDER_URL + orderId + ';jsessionid=' + self.session_id, None,
+                              order_payload, request_type=DeGiro.__MODIFY_REQUEST,
+                              error_message='Could not modify order' + " " + orderId)
 
     @staticmethod
     def filtercashfunds(cashfunds):
