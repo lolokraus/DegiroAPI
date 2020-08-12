@@ -19,6 +19,7 @@ class DeGiro:
     __PRODUCT_INFO_URL = 'https://trader.degiro.nl/product_search/secure/v5/products/info'
     __TRANSACTIONS_URL = 'https://trader.degiro.nl/reporting/secure/v4/transactions'
     __ORDERS_URL = 'https://trader.degiro.nl/reporting/secure/v4/order-history'
+    __ACCOUNT_URL = 'https://trader.degiro.nl/reporting/secure/v6/accountoverview'
 
     __PLACE_ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/checkOrder'
     __ORDER_URL = 'https://trader.degiro.nl/trading/secure/v5/order/'
@@ -132,6 +133,16 @@ class DeGiro:
         }
         return self.__request(DeGiro.__TRANSACTIONS_URL, None, transactions_payload,
                               error_message='Could not get transactions.')['data']
+
+    def account_overview(self, from_date, to_date):
+        account_payload = {
+            'fromDate': from_date.strftime('%d/%m/%Y'),
+            'toDate': to_date.strftime('%d/%m/%Y'),
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id
+        }
+        return self.__request(DeGiro.__ACCOUNT_URL, None, account_payload,
+                              error_message='Could not get account overview.')['data']
 
     def orders(self, from_date, to_date, not_executed=None):
         orders_payload = {
