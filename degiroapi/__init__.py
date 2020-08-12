@@ -7,6 +7,7 @@ from degiroapi.intervaltypes import Interval
 
 class DeGiro:
     __LOGIN_URL = 'https://trader.degiro.nl/login/secure/login'
+    __LOGIN_TOTP_URL = 'https://trader.degiro.nl/login/secure/login/totp'
     __CONFIG_URL = 'https://trader.degiro.nl/login/secure/config'
 
     __LOGOUT_URL = 'https://trader.degiro.nl/trading/secure/logout'
@@ -34,15 +35,20 @@ class DeGiro:
     client_info = any
     confirmation_id = any
 
-    def login(self, username, password):
+    def login(self, username, password, totp=None):
         login_payload = {
             'username': username,
             'password': password,
             'isPassCodeReset': False,
             'isRedirectToMobile': False
         }
-        login_response = self.__request(DeGiro.__LOGIN_URL, None, login_payload, request_type=DeGiro.__POST_REQUEST,
-                                        error_message='Could not login.')
+        if totp is not None:
+            login_payload["oneTimePassword"] = totp
+            login_response = self.__request(DeGiro.__LOGIN_TOTP_URL, None, login_payload, request_type=DeGiro.__POST_REQUEST,
+                                            error_message='Could not login.')
+        else:
+            login_response = self.__request(DeGiro.__LOGIN_URL, None, login_payload, request_type=DeGiro.__POST_REQUEST,
+                                            error_message='Could not login.')
         self.session_id = login_response['sessionId']
         client_info_payload = {'sessionId': self.session_id}
         client_info_response = self.__request(DeGiro.__CLIENT_INFO_URL, None, client_info_payload,
