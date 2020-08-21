@@ -5,3 +5,4 @@ build/
 degiroapi.egg-info/
 dist/
 examples/ex-test.py
+core.py
