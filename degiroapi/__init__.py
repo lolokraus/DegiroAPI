@@ -316,3 +316,17 @@ class DeGiro:
         return \
             self.__request(DeGiro.__GET_STOCKS_URL, None, stock_list_params, error_message='Could not get stock list')[
                 'products']
+
+    def get_exchange_rate(self, exchange):
+        '''Provides real time exchange rates for the most common currencies.
+        Args:
+            exchange (str): One of the following: 'EUR/USD', 'EUR/GBP', 'EUR/CHF', 'EUR/CHF', 'EUR/JPY', 'GBP/USD'.
+        '''
+        exchange_ids = {'EUR/USD': '705366',
+                        'EUR/GBP': '714324',
+                        'EUR/CHF': '714322',
+                        'EUR/JPY': '1316472', 
+                        'GBP/USD': '1788982'
+                        }
+        last_rate = self.real_time_price(exchange_ids[exchange], interval=Interval.Type.One_Day)[0]['data']['lastPrice']
+        return last_rate
