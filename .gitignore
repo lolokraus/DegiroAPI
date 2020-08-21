@@ -4,3 +4,4 @@ degiroapi/__pycache__/
 build/
 degiroapi.egg-info/
 dist/
+core.py
