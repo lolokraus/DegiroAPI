@@ -4,6 +4,7 @@ from degiroapi.client_info import ClientInfo
 from degiroapi.datatypes import Data
 from degiroapi.intervaltypes import Interval
 
+session = requests.Session()
 
 class DeGiro:
     __LOGIN_URL = 'https://trader.degiro.nl/login/secure/login'
@@ -72,17 +73,17 @@ class DeGiro:
                   error_message='An error occurred.'):
 
         if request_type == DeGiro.__DELETE_REQUEST:
-            response = requests.delete(url, json=payload)
+            response = session.delete(url, json=payload)
         elif request_type == DeGiro.__GET_REQUEST and cookie:
-            response = requests.get(url, cookies=cookie)
+            response = session.get(url, cookies=cookie)
         elif request_type == DeGiro.__GET_REQUEST:
-            response = requests.get(url, params=payload)
+            response = session.get(url, params=payload)
         elif request_type == DeGiro.__POST_REQUEST and headers and data:
-            response = requests.post(url, headers=headers, params=payload, data=data)
+            response = session.post(url, headers=headers, params=payload, data=data)
         elif request_type == DeGiro.__POST_REQUEST and post_params:
-            response = requests.post(url, params=post_params, json=payload)
+            response = session.post(url, params=post_params, json=payload)
         elif request_type == DeGiro.__POST_REQUEST:
-            response = requests.post(url, json=payload)
+            response = session.post(url, json=payload)
         else:
             raise Exception(f'Unknown request type: {request_type}')
 
