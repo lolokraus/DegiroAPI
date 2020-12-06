@@ -10,8 +10,9 @@ class Product:
         self.__currency = product['currency']
         self.__product_type = product['productTypeId']
         self.__tradable = product['tradable']
-        self.__close_price = product['closePrice']
-        self.__close_price_date = datetime.strptime(product['closePriceDate'], '%Y-%m-%d').date()
+        self.__close_price = product.get('closePrice')
+        close_price_date = product.get('closePriceDate')
+        self.__close_price_date = datetime.strptime(close_price_date, '%Y-%m-%d').date() if close_price_date else None
 
     @property
     def id(self):
