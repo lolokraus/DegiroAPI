@@ -66,6 +66,16 @@ class DeGiro:
 
         return client_info_response
 
+    def login_prompt(self, username=None, password=None, totp=None):
+        import getpass
+
+        if not username: username = input("Username: ")
+        if not password: password = getpass.getpass("Password:")
+        if not totp:     totp = getpass.getpass("totp (Leave empty if none):")
+        
+        if totp=="": return self.login(username, password)
+        else:        return self.login(username, password, totp)
+
     def logout(self):
         logout_payload = {
             'intAccount': self.client_info.account_id,
