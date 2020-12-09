@@ -9,6 +9,21 @@ from datetime import datetime, timedelta
 degiro = degiroapi.DeGiro()
 degiro.login("username", "password")
 
+# Equivalent to:
+#degiro = degiroapi.DeGiro("username", "password") # prompts for totp (optional)
+
+# Password can be given dynamically using login_prompt:
+# -not necessary to include in .py script
+degiro = degiroapi.DeGiro()
+degiro.login_prompt("username") # prompts for password and totp (optional)
+
+#Equivalent to:
+#degiro = degiroapi.DeGiro("username") # prompts for password and totp (optional)
+
+# To dynamically provide all credentials use:
+degiro = degiroapi.DeGiro() 
+degiro.login_prompt() #prompts for username, password and totp (optional)
+
 # logout
 degiro.logout()
 
