@@ -36,6 +36,12 @@ class DeGiro:
     client_info = any
     confirmation_id = any
 
+    def __init__(self, username=None, password=None, totp=None):
+        if not username: # Proceed without login
+            pass
+        else: # Login prompt
+            DeGiro.login_prompt(self, username=username, password=password, totp=totp)
+
     def login(self, username, password, totp=None):
         login_payload = {
             'username': username,
