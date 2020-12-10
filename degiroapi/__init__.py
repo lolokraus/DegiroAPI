@@ -38,7 +38,7 @@ class DeGiro:
 
     def __init__(self, username=None, password=None, totp=None):
         if username: # Login prompt
-            DeGiro.login_prompt(self, username=username, password=password, totp=totp)
+            self.login_prompt(username=username, password=password, totp=totp)
 
     def login(self, username, password, totp=None):
         login_payload = {
