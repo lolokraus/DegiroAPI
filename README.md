@@ -7,7 +7,7 @@ An unofficial API for the trading platform Degiro written in Python with the abi
 ### Installing
 
 ``` python
-pip install advertsapi
+pip install degiroapi
 ```
 
 ### Dependecies
@@ -55,7 +55,7 @@ degiro.logout()
 
 ## getdata
 
-Printing your current cach funds:
+Printing your current cash funds:
 
 ``` python
 cashfunds = degiro.getdata(degiroapi.Data.Type.CASHFUNDS)
