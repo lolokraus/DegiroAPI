@@ -24,6 +24,8 @@ class DeGiro:
 
     __DATA_URL = 'https://trader.degiro.nl/trading/secure/v5/update/'
     __PRICE_DATA_URL = 'https://charting.vwdservices.com/hchart/v1/deGiro/data.js'
+    
+    __COMPANY_RATIOS_URL = 'https://trader.degiro.nl/dgtbxdsservice/company-ratios/'
 
     __GET_REQUEST = 0
     __POST_REQUEST = 1
@@ -115,6 +117,18 @@ class DeGiro:
                               data=json.dumps([str(product_id)]),
                               request_type=DeGiro.__POST_REQUEST,
                               error_message='Could not get product info.')['data'][str(product_id)]
+    
+    def company_ratios(self, product_isin):
+        product_info_payload = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id
+        }
+        return self.__request(DeGiro.__COMPANY_RATIOS_URL+product_isin,
+                              None, product_info_payload,
+                              headers={'content-type': 'application/json'},
+                              data=None,
+                              request_type=DeGiro.__GET_REQUEST,
+                              error_message='Could not get company ratios.')['data']
 
     def transactions(self, from_date, to_date, group_transactions=False):
         transactions_payload = {
