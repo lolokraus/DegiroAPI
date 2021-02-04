@@ -180,7 +180,7 @@ degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, Order.Time.GTC, 1
 
 
 ## Usage
-For documented examples see [examples.py](https://github.com/lolokraus/DegiroAPI/blob/master/examples/examples.py)
+For documented examples see [examples.py](https://github.com/enekochan/DegiroAPI/blob/master/examples/examples.py)
 
 
 
