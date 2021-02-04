@@ -89,29 +89,29 @@ for product in products:
 
 # placing an order(dependent on the order type)
 # set a limit order price to which the order gets executed
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for unlimited, size, limit(the limit price)
-degiro.buyorder(Order.Type.LIMIT, Product(products[0]).id, 3, 1, 30)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for unlimited, size, limit(the limit price)
+degiro.buyorder(Order.Type.LIMIT, Product(products[0]).id, Order.Time.GTC, 1, 30)
 
 # sets a limit order when the stoploss price is reached(not bought for more than the limit at the stop loss price)
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
-degiro.buyorder(Order.Type.STOPLIMIT, Product(products[0]).id, 3, 1, 38, 38)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
+degiro.buyorder(Order.Type.STOPLIMIT, Product(products[0]).id, Order.Time.GTC, 1, 38, 38)
 
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size
-degiro.buyorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size
+degiro.buyorder(Order.Type.MARKET, Product(products[0]).id, Order.Time.GTC, 1)
 
 # the stop loss price has to be higher than the current price, when current price reaches the stoploss price the order is placed
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, don't change none, stop_loss(stop loss price)
-degiro.buyorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size, don't change none, stop_loss(stop loss price)
+degiro.buyorder(Order.Type.STOPLOSS, Product(products[0]).id, Order.Time.GTC, 1, None, 38)
 
 # selling a product
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for unlimited, size, limit(the limit price)
-degiro.sellorder(Order.Type.LIMIT, Product(products[0]).id, 3, 1, 40)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for unlimited, size, limit(the limit price)
+degiro.sellorder(Order.Type.LIMIT, Product(products[0]).id, Order.Time.GTC, 1, 40)
 
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
-degiro.sellorder(Order.Type.STOPLIMIT, Product(products[0]).id, 3, 1, 37, 38)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
+degiro.sellorder(Order.Type.STOPLIMIT, Product(products[0]).id, Order.Time.GTC, 1, 37, 38)
 
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size
-degiro.sellorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size
+degiro.sellorder(Order.Type.MARKET, Product(products[0]).id, Order.Time.GTC, 1)
 
-# order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, don't change none, stop_loss(stop loss price)
-degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
+# order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size, don't change none, stop_loss(stop loss price)
+degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, Order.Time.GTC, 1, None, 38)
