@@ -133,49 +133,49 @@ Placing a buy order is dependent on the order Type:
 
 ### Limit order 
 You have to set a limit order price to which the order gets executed.
-**arguments**: order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for unlimited, size, limit(the limit price)
+**arguments**: order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for unlimited, size, limit(the limit price)
 ```
-degiro.buyorder(Order.Type.LIMIT, Product(products[0]).id, 3, 1, 30)
+degiro.buyorder(Order.Type.LIMIT, Product(products[0]).id, Order.Time.GTC, 1, 30)
 ```
 
 ### StopLimit order
 Sets a limit order when the stoploss price is reached (not bought for more than the limit at the stop loss price):
-**arguments**: order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
+**arguments**: order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size, limit(the limit price), stop_loss(stop loss price)
 ```
-degiro.buyorder(Order.Type.STOPLIMIT, Product(products[0]).id, 3, 1, 38, 38)
+degiro.buyorder(Order.Type.STOPLIMIT, Product(products[0]).id, Order.Time.GTC, 1, 38, 38)
 ```
 
 ### Market order
 Bought at the market price:
-**arguments**: order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size
+**arguments**: order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size
 ```
-degiro.buyorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
+degiro.buyorder(Order.Type.MARKET, Product(products[0]).id, Order.Time.GTC, 1)
 ```
 
 ### StopLoss order
 The stop loss price has to be higher than the current price, when current price reaches the stoploss price the order is placed:
-**arguments**: order type, product id, execution time type (either 1 for "valid on a daily basis", or 3 for "unlimited"), size
+**arguments**: order type, product id, execution time type (either Order.Time.DAY for "valid on a daily basis", or Order.Time.GTC for "unlimited"), size
 ```
-degiro.buyorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
+degiro.buyorder(Order.Type.STOPLOSS, Product(products[0]).id, Order.Time.GTC, 1, None, 38)
 ```
 
 ## sellorder
 Placing a sell order is dependent on the order Type:
 Equivalent to the buy orders:
 ```
-degiro.sellorder(Order.Type.LIMIT, Product(products[0]).id, 3, 1, 40)
+degiro.sellorder(Order.Type.LIMIT, Product(products[0]).id, Order.Time.GTC, 1, 40)
 ```
 
 ```
-degiro.sellorder(Order.Type.STOPLIMIT, Product(products[0]).id, 3, 1, 37, 38)
+degiro.sellorder(Order.Type.STOPLIMIT, Product(products[0]).id, Order.Time.GTC, 1, 37, 38)
 ```
 
 ```
-degiro.sellorder(Order.Type.MARKET, Product(products[0]).id, 3, 1)
+degiro.sellorder(Order.Type.MARKET, Product(products[0]).id, Order.Time.GTC, 1)
 ```
 
 ```
-degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, 3, 1, None, 38)
+degiro.sellorder(Order.Type.STOPLOSS, Product(products[0]).id, Order.Time.GTC, 1, None, 38)
 ```
 
 
