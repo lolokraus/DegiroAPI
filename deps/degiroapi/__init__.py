@@ -1,8 +1,9 @@
-import requests, json
-from degiroapi.order import Order
-from degiroapi.client_info import ClientInfo
-from degiroapi.datatypes import Data
-from degiroapi.intervaltypes import Interval
+import requests
+import json
+from .order import Order
+from .client_info import ClientInfo
+from .datatypes import Data
+from .intervaltypes import Interval
 
 
 class DeGiro:

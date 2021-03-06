@@ -1,7 +1,7 @@
 DegiroAPI.iml
 .idea/
-degiroapi/__pycache__/
+deps/degiroapi/__pycache__/
 build/
 degiroapi.egg-info/
 dist/
-examples/ex-test.py
+deps/degiroapi/examples/ex-test.py

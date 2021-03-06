@@ -1,7 +1,7 @@
-import degiroapi
-from degiroapi.product import Product
-from degiroapi.order import Order
-from degiroapi.utils import pretty_json
+from deps import degiroapi
+from deps.degiroapi.product import Product
+from deps.degiroapi import Order
+from deps.degiroapi.utils import pretty_json
 
 from datetime import datetime, timedelta
 
