@@ -218,17 +218,15 @@ class DeGiro:
                 error_message='Could not get data')
 
     def real_time_price(self, product_id, interval):
-        vw_id = self.product_info(product_id)['vwdId']
-        tmp = vw_id
-        try:
-            int(tmp)
-        except:
-            vw_id = self.product_info(product_id)['vwdIdSecondary']
-
+        product_info = self.product_info(product_id)
+        
+        vw_id = product_info['vwdId']
+        vw_id_type = product_info['vwdIdentifierType']
+        
         price_payload = {
             'requestid': 1,
             'period': interval,
-            'series': ['issueid:' + vw_id, 'price:issueid:' + vw_id],
+            'series': [vw_id_type + ':' + vw_id, 'price:' + vw_id_type + ':' + vw_id],
             'userToken': self.client_token
         }
 
