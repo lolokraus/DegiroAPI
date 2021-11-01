@@ -115,6 +115,17 @@ class DeGiro:
                               data=json.dumps([str(product_id)]),
                               request_type=DeGiro.__POST_REQUEST,
                               error_message='Could not get product info.')['data'][str(product_id)]
+    
+    def products_info(self, product_ids):
+        product_info_payload = {
+            'intAccount': self.client_info.account_id,
+            'sessionId': self.session_id
+        }
+        return self.__request(DeGiro.__PRODUCT_INFO_URL, None, product_info_payload,
+                              headers={'content-type': 'application/json'},
+                              data=json.dumps([str(p) for p in product_ids]),
+                              request_type=DeGiro.__POST_REQUEST,
+                              error_message='Could not get product info.')['data']
 
     def transactions(self, from_date, to_date, group_transactions=False):
         transactions_payload = {
