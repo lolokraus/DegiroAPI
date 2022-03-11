@@ -120,7 +120,7 @@ class DeGiro:
         transactions_payload = {
             'fromDate': from_date.strftime('%d/%m/%Y'),
             'toDate': to_date.strftime('%d/%m/%Y'),
-            'group_transactions_by_order': group_transactions,
+            'groupTransactionsByOrder': group_transactions,
             'intAccount': self.client_info.account_id,
             'sessionId': self.session_id
         }
